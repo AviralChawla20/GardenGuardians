@@ -30,92 +30,104 @@ document.addEventListener("DOMContentLoaded", function () {
   async function displayPlantsInNursery(plants) {
     const plantListElement = document.getElementById("plantList");
 
-    for (const plant of plants) {
-      // Create a list item for each plant
-      const listItem = document.createElement("li");
+    plantListElement.innerHTML = "";
+    if (plants.length > 0) {
+      document.getElementById("addActivityButton").style.display = "block";
+      for (const plant of plants) {
+        // Create a list item for each plant
+        const listItem = document.createElement("li");
 
-      // Create a div to hold plant details
-      const plantDetailsDiv = document.createElement("div");
-      plantDetailsDiv.classList.add("plant-details");
+        // Create a div to hold plant details
+        const plantDetailsDiv = document.createElement("div");
+        plantDetailsDiv.classList.add("plant-details");
 
-      // Display plant number
-      const plantNumber = document.createElement("span");
-      plantNumber.textContent = `${plants.indexOf(plant) + 1}. `;
-      plantNumber.classList.add("plant-number");
-      plantDetailsDiv.appendChild(plantNumber);
+        // Display plant number
+        const plantNumber = document.createElement("span");
+        plantNumber.textContent = `${plants.indexOf(plant) + 1}. `;
+        plantNumber.classList.add("plant-number");
+        plantDetailsDiv.appendChild(plantNumber);
 
-      // Display plant name
-      const plantName = document.createElement("h3");
-      plantName.textContent = plant.common_name;
-      plantDetailsDiv.appendChild(plantName);
+        // Display plant name
+        const plantName = document.createElement("h3");
+        plantName.textContent = plant.common_name;
+        plantDetailsDiv.appendChild(plantName);
 
-      // Create a button for viewing tips
-      const tipsButton = document.createElement("button");
-      tipsButton.textContent = "Click to View Tips";
-      tipsButton.classList.add("tips-button");
+        // Create a button for viewing tips
+        const tipsButton = document.createElement("button");
+        tipsButton.textContent = "Click to View Tips";
+        tipsButton.classList.add("tips-button");
 
-      // Add a click event listener to handle button click
-      tipsButton.addEventListener("click", function () {
-        // Handle the button click, e.g., show tips or navigate to tips page
-        console.log(`View tips for plant ${plant.common_name}`);
-        openTipsModal(plant.common_name, plant.watering, plant.sunlight);
-      });
+        // Add a click event listener to handle button click
+        tipsButton.addEventListener("click", function () {
+          // Handle the button click, e.g., show tips or navigate to tips page
+          console.log(`View tips for plant ${plant.common_name}`);
+          openTipsModal(plant.common_name, plant.watering, plant.sunlight);
+        });
 
-      // Append the button to the plant details div
-      plantDetailsDiv.appendChild(tipsButton);
+        // Append the button to the plant details div
+        plantDetailsDiv.appendChild(tipsButton);
 
-      // Create a button for viewing activity log
-      const viewActivityLogButton = document.createElement("button");
-      viewActivityLogButton.textContent = "View Activity Log";
-      viewActivityLogButton.classList.add("view-activity-log-button");
+        // Create a button for viewing activity log
+        const viewActivityLogButton = document.createElement("button");
+        viewActivityLogButton.textContent = "View Activity Log";
+        viewActivityLogButton.classList.add("view-activity-log-button");
 
-      // Add a click event listener to handle button click
-      viewActivityLogButton.addEventListener("click", function () {
-        // Handle the button click, e.g., navigate to activity log page for the specific plant
-        console.log(uid, plant.common_name);
-        openActivityLog(uid, plant.common_name);
-      });
+        // Add a click event listener to handle button click
+        viewActivityLogButton.addEventListener("click", function () {
+          // Handle the button click, e.g., navigate to activity log page for the specific plant
+          console.log(uid, plant.common_name);
+          openActivityLog(uid, plant.common_name);
+        });
 
-      // Append the button to the plant details div
-      plantDetailsDiv.appendChild(viewActivityLogButton);
+        // Append the button to the plant details div
+        plantDetailsDiv.appendChild(viewActivityLogButton);
 
-      // Add a click event listener to redirect to the plant details page
-      // listItem.addEventListener("click", function () {
-      //   // Redirect to the plant details page with the plant ID
-      //   window.location.href = `/plantDetails.html?id=${plant.p_id}`;
-      // });
+        // Add a click event listener to redirect to the plant details page
+        // listItem.addEventListener("click", function () {
+        //   // Redirect to the plant details page with the plant ID
+        //   window.location.href = `/plantDetails.html?id=${plant.p_id}`;
+        // });
 
-      // Append the plant details div to the list item
-      listItem.appendChild(plantDetailsDiv);
+        // Append the plant details div to the list item
+        listItem.appendChild(plantDetailsDiv);
 
-      // Append the list item to the plant list
-      plantListElement.appendChild(listItem);
+        // Append the list item to the plant list
+        plantListElement.appendChild(listItem);
 
-      try {
-        const response = await fetch(
-          `http://localhost:5503/api/plants/${plant.p_id}/needsNotification`
-        );
-        const data = await response.json();
-        const needsNotification = data.needsNotification;
-        console.log("Hi!");
-        // Use the needsNotification value as needed (for example, display an icon)
-        if (needsNotification) {
-          console.log(`Plant ${plant.common_name} needs notification!`);
-          document.getElementById("activityPopup").style.display = "block";
-          Push.create("Reminder 🌱!", {
-            body: `Please water ${plant.common_name}. It needs your attention 🥺🥺`,
-            icon: "Images/favicon.ico",
-            timeout: 5000,
-            onClick: function () {
-              window.focus();
-              this.close();
-            },
-          });
-          // Add your logic here to handle the notification (e.g., display an icon)
+        try {
+          const response = await fetch(
+            `http://localhost:5503/api/plants/${plant.p_id}/needsNotification`
+          );
+          const data = await response.json();
+          const needsNotification = data.needsNotification;
+          console.log("Hi!");
+          // Use the needsNotification value as needed (for example, display an icon)
+          if (needsNotification) {
+            console.log(`Plant ${plant.common_name} needs notification!`);
+            document.getElementById("activityPopup").style.display = "block";
+            Push.create("Reminder 🌱!", {
+              body: `Please water ${plant.common_name}. It needs your attention 🥺🥺`,
+              icon: "Images/favicon.ico",
+              timeout: 5000,
+              onClick: function () {
+                window.focus();
+                this.close();
+              },
+            });
+            // Add your logic here to handle the notification (e.g., display an icon)
+          }
+        } catch (error) {
+          console.error("Error checking needs notification:", error);
         }
-      } catch (error) {
-        console.error("Error checking needs notification:", error);
       }
+    } else {
+      document.getElementById("addActivityButton").style.display = "none";
+      // Display a message when there are no plants
+      const noPlantsMessage = document.createElement("p");
+      noPlantsMessage.textContent = "Sorry, No Plants found.";
+      noPlantsMessage.style.fontFamily = "Value Serif Pro Regular"; // Set the font
+      noPlantsMessage.style.textAlign = "center"; // Center the text
+      plantListElement.appendChild(noPlantsMessage);
     }
   }
 
