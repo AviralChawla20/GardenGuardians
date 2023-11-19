@@ -37,9 +37,7 @@ app.get("/searchPlants", async (req, res) => {
 
   const sql = "SELECT * FROM Plants WHERE common_name LIKE ?";
   try {
-    const searchResult = await connection
-      .promise()
-      .execute(sql, [`  `]);
+    const searchResult = await connection.promise().execute(sql, [`  `]);
     res.json({ plants: searchResult[0] });
   } catch (error) {
     console.error("Error searching plants:", error);
@@ -570,7 +568,8 @@ async function createLogActivityTable() {
         uid INT  ,
         plant_name VARCHAR(255) NOT NULL,
         activity_date DATE ,
-        activity_time TIME 
+        activity_time TIME ,
+        FOREIGN KEY (uid) REFERENCES users(ID)
       );
     `;
 
