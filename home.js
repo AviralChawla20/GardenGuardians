@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
           console.log(`Plant ${plant.common_name} needs notification!`);
           document.getElementById("activityPopup").style.display = "block";
           Push.create("Reminder 🌱!", {
-            body: `Please water. It needs your attention 🥺🥺`,
+            body: `Please water ${plant.common_name}. It needs your attention 🥺🥺`,
             icon: "Images/favicon.ico",
             timeout: 5000,
             onClick: function () {

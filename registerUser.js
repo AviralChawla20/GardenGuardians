@@ -51,6 +51,7 @@ connection.query("CREATE DATABASE IF NOT EXISTS plant_care", (err) => {
         // Create "before insert" triggers
         createUsernameTrigger();
         createEmailTrigger();
+        createInsertUserProcedure();
 
         // Continue with the rest of your code here
 
@@ -68,11 +69,38 @@ connection.query("CREATE DATABASE IF NOT EXISTS plant_care", (err) => {
             await createNurseryTable();
           }
 
+          // const procedureExists = "SHOW procedure STATUS LIKE 'InsertUser';";
+          // const [procedureRows] = await connection
+          //   .promise()
+          //   .query(procedureExists);
+          // // const procedureExists = await checkIfProcedureExists("GetPlantDetailsById");
+
+          // if (procedureRows.length === 0) {
+          //   // Create the stored procedure
+          //   await createInsertUserProcedure();
+          // }
+
           // Insert user into the database
-          const sql =
-            "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+          // const procedureSql = "CALL InsertUser(?, ?, ?)";
+          // const sql =
+          //   "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+          // connection.query(
+          //   sql,
+          //   [username, email, hashedPassword],
+          //   (err, results) => {
+          //     if (err) {
+          //       console.error("Error inserting user:", err);
+          //       return res.status(500).json({ error: "Internal Server Error" });
+          //     }
+
+          //     console.log("User registered successfully");
+          //     return res
+          //       .status(200)
+          //       .json({ message: "User registered successfully" });
+          //   }
+          // );
           connection.query(
-            sql,
+            "CALL InsertUser(?, ?, ?)",
             [username, email, hashedPassword],
             (err, results) => {
               if (err) {
@@ -206,3 +234,51 @@ async function createNurseryTable() {
     throw error;
   }
 }
+
+function createInsertUserProcedure() {
+  const procedureName = "InsertUser";
+  const checkProcedureSql = `
+    SELECT COUNT(*) AS procedure_count
+    FROM information_schema.routines
+    WHERE routine_name = ?;
+  `;
+
+  connection.query(checkProcedureSql, [procedureName], (err, results) => {
+    if (err) {
+      console.error("Error checking InsertUser procedure existence:", err);
+    } else {
+      const procedureCount = results[0].procedure_count;
+      if (procedureCount === 0) {
+        // Procedure does not exist, create it
+        createProcedure("InsertUser", insertUserProcedureSql);
+      } else {
+        console.log("InsertUser procedure already exists");
+      }
+    }
+  });
+}
+
+// Helper function to create a stored procedure
+function createProcedure(procedureName, procedureSql) {
+  connection.query(procedureSql, (err) => {
+    if (err) {
+      console.error(`Error creating ${procedureName} procedure:`, err);
+    } else {
+      console.log(`${procedureName} procedure created successfully`);
+    }
+  });
+}
+
+// Define stored procedure SQL statement
+const insertUserProcedureSql = `
+  CREATE PROCEDURE InsertUser(
+    IN p_username VARCHAR(255),
+    IN p_email VARCHAR(255),
+    IN p_password VARCHAR(255)
+  )
+  BEGIN
+    -- Insert user into the database
+    INSERT INTO users (username, email, password)
+    VALUES (p_username, p_email, p_password);
+  END;
+`;

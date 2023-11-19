@@ -39,7 +39,7 @@ app.get("/searchPlants", async (req, res) => {
   try {
     const searchResult = await connection
       .promise()
-      .execute(sql, [`%${searchTerm}%`]);
+      .execute(sql, [`  `]);
     res.json({ plants: searchResult[0] });
   } catch (error) {
     console.error("Error searching plants:", error);
