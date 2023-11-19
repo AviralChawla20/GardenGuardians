@@ -49,6 +49,7 @@ Or, if you are lazy like me, just double click installDependencies.bat!
 - If you encounter any issues, check the console logs for error messages.
 - If, and if by any chance the getPlants.bat doesnt work and cant properly create table, please go into fetchPlant.js, and change the API key to one of these:
   sk-6nu5655a484ce86f83018
+
   sk-ipfM655a487c289123019
 
 **Happy gardening!**
