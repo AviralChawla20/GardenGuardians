@@ -15,7 +15,7 @@ const db = mysql.createPool({
 let insertedRecords = 0;
 
 const apiUrl =
-  "https://perenual.com/api/species-list?key=sk-LmPl6551cdb71dc6d2939";
+  "https://perenual.com/api/species-list?key=sk-Ize6655a427ba502e2939";
 
 // Function to fetch data for a given page with rate limiting
 async function fetchData(page) {

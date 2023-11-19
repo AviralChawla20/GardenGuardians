@@ -37,7 +37,9 @@ app.get("/searchPlants", async (req, res) => {
 
   const sql = "SELECT * FROM Plants WHERE common_name LIKE ?";
   try {
-    const searchResult = await connection.promise().execute(sql, [`  `]);
+    const searchResult = await connection
+      .promise()
+      .execute(sql, [`%${searchTerm}%`]);
     res.json({ plants: searchResult[0] });
   } catch (error) {
     console.error("Error searching plants:", error);
